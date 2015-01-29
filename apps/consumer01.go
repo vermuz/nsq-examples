@@ -15,14 +15,9 @@ import (
 )
 
 var (
-	showVersion = flag.Bool("version", false, "print version string")
-
-	topic         = flag.String("topic", "", "NSQ topic")
-	channel       = flag.String("channel", "", "NSQ channel")
-	maxInFlight   = flag.Int("max-in-flight", 200, "max number of messages to allow in flight")
-	totalMessages = flag.Int("n", 0, "total messages to show (will wait if starved)")
-
-	consumerOpts     = util.StringArray{}
+	showVersion      = flag.Bool("version", false, "print version string")
+	topic            = flag.String("topic", "", "NSQ topic")
+	channel          = flag.String("channel", "", "NSQ channel")
 	nsqdTCPAddrs     = util.StringArray{}
 	lookupdHTTPAddrs = util.StringArray{}
 )
@@ -32,13 +27,9 @@ func init() {
 	flag.Var(&lookupdHTTPAddrs, "lookupd-http-address", "lookupd HTTP address (may be given multiple times)")
 }
 
-type TailHandler struct {
-	totalMessages int
-	messagesShown int
-}
+type TailHandler struct{}
 
 func (th *TailHandler) HandleMessage(m *nsq.Message) error {
-	th.messagesShown++
 	_, err := os.Stdout.Write(m.Body)
 	if err != nil {
 		log.Fatalf("ERROR: failed to write to os.Stdout - %s", err)
@@ -77,18 +68,8 @@ func main() {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Don't ask for more messages than we want
-	if *totalMessages > 0 && *totalMessages < *maxInFlight {
-		*maxInFlight = *totalMessages
-	}
-
 	cfg := nsq.NewConfig()
 	cfg.UserAgent = fmt.Sprintf("nsq_tail/%s go-nsq/%s", util.BINARY_VERSION, nsq.VERSION)
-	err := util.ParseOpts(cfg, consumerOpts)
-	if err != nil {
-		log.Fatal(err)
-	}
-	cfg.MaxInFlight = *maxInFlight
 
 	consumer, err := nsq.NewConsumer(*topic, *channel, cfg)
 	if err != nil {
