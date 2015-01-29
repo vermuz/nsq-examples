@@ -28,10 +28,6 @@ var (
 )
 
 func init() {
-	// TODO: remove, deprecated
-	flag.Var(&consumerOpts, "reader-opt", "(deprecated) use --consumer-opt")
-	flag.Var(&consumerOpts, "consumer-opt", "option to passthrough to nsq.Consumer (may be given multiple times, http://godoc.org/github.com/bitly/go-nsq#Config)")
-
 	flag.Var(&nsqdTCPAddrs, "nsqd-tcp-address", "nsqd TCP address (may be given multiple times)")
 	flag.Var(&lookupdHTTPAddrs, "lookupd-http-address", "lookupd HTTP address (may be given multiple times)")
 }
@@ -103,11 +99,6 @@ func main() {
 	}
 
 	consumer.AddHandler(&TailHandler{totalMessages: *totalMessages})
-
-	err = consumer.ConnectToNSQDs(nsqdTCPAddrs)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	err = consumer.ConnectToNSQLookupds(lookupdHTTPAddrs)
 	if err != nil {
