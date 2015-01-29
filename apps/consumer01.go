@@ -76,7 +76,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	consumer.AddHandler(&TailHandler{})
+	consumer.AddHandler(TailHandler{})
 
 	err = consumer.ConnectToNSQLookupds(lookupdHTTPAddrs)
 	if err != nil {
