@@ -47,9 +47,6 @@ func (th *TailHandler) HandleMessage(m *nsq.Message) error {
 	if err != nil {
 		log.Fatalf("ERROR: failed to write to os.Stdout - %s", err)
 	}
-	if th.totalMessages > 0 && th.messagesShown >= th.totalMessages {
-		os.Exit(0)
-	}
 	return nil
 }
 
@@ -98,7 +95,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	consumer.AddHandler(&TailHandler{totalMessages: *totalMessages})
+	consumer.AddHandler(&TailHandler{})
 
 	err = consumer.ConnectToNSQLookupds(lookupdHTTPAddrs)
 	if err != nil {
