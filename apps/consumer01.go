@@ -29,7 +29,7 @@ func init() {
 
 type TailHandler struct{}
 
-func (th *TailHandler) HandleMessage(m *nsq.Message) error {
+func (th TailHandler) HandleMessage(m *nsq.Message) error {
 	_, err := os.Stdout.Write(m.Body)
 	if err != nil {
 		log.Fatalf("ERROR: failed to write to os.Stdout - %s", err)
