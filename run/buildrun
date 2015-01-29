@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+
+source ./run/build
+
+cd ./apps/
+go build -o ./../../bin/consumer01
